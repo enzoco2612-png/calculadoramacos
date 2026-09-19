@@ -1,0 +1,45 @@
+# Node
+node_modules/
+dist/
+
+# Tauri / Rust build
+src-tauri/target/
+target/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# OS/editor
+.DS_Store
+
+# Cursor: ignore dados internos, preserve apenas regras do projeto
+.cursor/*
+!.cursor/rules/
+!.cursor/rules/**
+# Dependencies
+node_modules/
+dist/
+src-tauri/target/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor
+.DS_Store
+.idea/
+.vscode/
+
+# Env
+.env
+.env.*
+
+node_modules/
+dist/
+src-tauri/target/
+target/
+.env
+.env.*
+.cursor/

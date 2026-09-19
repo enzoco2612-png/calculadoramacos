@@ -1,0 +1,14 @@
+[[permission]]
+identifier = "allow-history-insert"
+description = "Allows inserting a completed calculation into history"
+commands.allow = ["history_insert"]
+
+[[permission]]
+identifier = "allow-history-list"
+description = "Allows listing calculation history"
+commands.allow = ["history_list"]
+
+[[permission]]
+identifier = "allow-history-clear"
+description = "Allows clearing calculation history"
+commands.allow = ["history_clear"]

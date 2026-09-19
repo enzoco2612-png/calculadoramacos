@@ -1,0 +1,53 @@
+/* Design tokens from design.pen */
+
+:root {
+  --window-bg: #1e1e1e;
+  --key-function: #717171;
+  --key-number: #474747;
+  --key-operator: #fd8c00;
+  --text-primary: #ffffff;
+  --text-expression: #b0b0b0;
+  --traffic-red: #ff5f57;
+  --traffic-yellow: #ffbd2e;
+  --traffic-gray: #5c5c5e;
+  --utility-fill: #2a2a2a;
+  --utility-stroke: #5a5a5a;
+  --font-ui: "Inter", system-ui, sans-serif;
+
+  --window-width: 456px;
+  --window-height: 816px;
+  --window-radius: 52px;
+  --window-padding-top: 18px;
+  --window-padding-right: 20px;
+  --window-padding-bottom: 22px;
+  --window-padding-left: 20px;
+  --window-gap: 8px;
+  --window-shadow: 0 18px 40px #00000066;
+
+  --top-controls-height: 44px;
+  --traffic-size: 22px;
+  --traffic-gap: 10px;
+  --utility-size: 40px;
+  --utility-gap: 96px;
+  --utility-stroke-width: 1.25px;
+
+  --display-gap: 2px;
+  --display-padding-top: 8px;
+  --display-padding-x: 4px;
+  --display-padding-bottom: 28px;
+  --expression-size: 30px;
+  --expression-tracking: 0.2px;
+  --result-size: 62px;
+  --result-tracking: 0.4px;
+
+  --keypad-gap: 16px;
+  --key-size: 92px;
+  --key-radius: 46px;
+
+  --key-function-hover: #7e7e7e;
+  --key-function-pressed: #656565;
+  --key-number-hover: #545454;
+  --key-number-pressed: #3d3d3d;
+  --key-operator-hover: #ffa01a;
+  --key-operator-pressed: #e07d00;
+}

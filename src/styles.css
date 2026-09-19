@@ -1,0 +1,277 @@
+@import "./styles/tokens.css";
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-ui);
+  background: transparent;
+  color: var(--text-primary);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  border: none;
+  margin: 0;
+  padding: 0;
+  background: none;
+  cursor: pointer;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+.app {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  background: transparent;
+}
+
+/* —— Window (design.pen: Calculator Window) —— */
+
+.calculator-window {
+  width: var(--window-width);
+  height: var(--window-height);
+  display: flex;
+  flex-direction: column;
+  gap: var(--window-gap);
+  padding: var(--window-padding-top) var(--window-padding-right)
+    var(--window-padding-bottom) var(--window-padding-left);
+  background: var(--window-bg);
+  border-radius: var(--window-radius);
+  box-shadow: var(--window-shadow);
+  overflow: hidden;
+}
+
+/* —— Top controls —— */
+
+.top-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  height: var(--top-controls-height);
+  flex-shrink: 0;
+}
+
+.window-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--traffic-gap);
+  padding-left: 2px;
+}
+
+.traffic {
+  width: var(--traffic-size);
+  height: var(--traffic-size);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.traffic--close {
+  background: var(--traffic-red);
+}
+
+.traffic--minimize {
+  background: var(--traffic-yellow);
+}
+
+.traffic--inactive {
+  background: var(--traffic-gray);
+}
+
+.traffic:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+
+.utility-controls {
+  display: flex;
+  align-items: center;
+  gap: var(--utility-gap);
+}
+
+.utility-btn {
+  width: var(--utility-size);
+  height: var(--utility-size);
+  border-radius: 20px;
+  background: var(--utility-fill);
+  box-shadow: inset 0 0 0 var(--utility-stroke-width) var(--utility-stroke);
+}
+
+.utility-btn:disabled {
+  opacity: 1;
+}
+
+/* —— Display —— */
+
+.display {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-end;
+  gap: var(--display-gap);
+  width: 100%;
+  min-height: 0;
+  padding: var(--display-padding-top) var(--display-padding-x)
+    var(--display-padding-bottom);
+  text-align: right;
+}
+
+.display__expression {
+  width: 100%;
+  min-height: 1.2em;
+  color: var(--text-expression);
+  font-size: var(--expression-size);
+  font-weight: 400;
+  letter-spacing: var(--expression-tracking);
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.display__result {
+  width: 100%;
+  color: var(--text-primary);
+  font-size: var(--result-size);
+  font-weight: 400;
+  letter-spacing: var(--result-tracking);
+  line-height: 1.1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* —— Keypad —— */
+
+.keypad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--keypad-gap);
+  width: 100%;
+  flex-shrink: 0;
+}
+
+.keypad__row {
+  display: flex;
+  justify-content: center;
+  gap: var(--keypad-gap);
+  width: 100%;
+}
+
+.calc-key {
+  width: var(--key-size);
+  height: var(--key-size);
+  border-radius: var(--key-radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-primary);
+  font-size: 32px;
+  font-weight: 400;
+  line-height: 1;
+  transition: background-color 80ms ease, transform 60ms ease;
+}
+
+.calc-key--function {
+  background: var(--key-function);
+}
+
+.calc-key--number {
+  background: var(--key-number);
+}
+
+.calc-key--operator {
+  background: var(--key-operator);
+}
+
+.calc-key--ac {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+.calc-key--percent {
+  font-size: 26px;
+  font-weight: 500;
+}
+
+.calc-key--op-symbol {
+  font-size: 36px;
+}
+
+.calc-key--equals {
+  font-size: 34px;
+}
+
+.calc-key--sign {
+  font-size: 22px;
+}
+
+.calc-key__minus {
+  display: block;
+  width: 22px;
+  height: 3.5px;
+  border-radius: 2px;
+  background: var(--text-primary);
+}
+
+.calc-key__backspace {
+  display: block;
+  color: var(--text-primary);
+}
+
+.calc-key--function:hover:not(:disabled) {
+  background: var(--key-function-hover);
+}
+
+.calc-key--number:hover:not(:disabled) {
+  background: var(--key-number-hover);
+}
+
+.calc-key--operator:hover:not(:disabled) {
+  background: var(--key-operator-hover);
+}
+
+.calc-key--function:active:not(:disabled) {
+  background: var(--key-function-pressed);
+}
+
+.calc-key--number:active:not(:disabled) {
+  background: var(--key-number-pressed);
+}
+
+.calc-key--operator:active:not(:disabled) {
+  background: var(--key-operator-pressed);
+}
+
+.calc-key:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
+}
+
+.traffic:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.traffic:active:not(:disabled) {
+  filter: brightness(0.92);
+}

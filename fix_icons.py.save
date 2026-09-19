@@ -1,0 +1,10 @@
+from PIL import Image
+from pathlib import Path
+
+folder = Path("src-tauri/icons")
+
+for path in folder.glob("*.png"):
+    img = Image.open(path).convert("RGBA")
+    img.save(path)
+    print("Corrigido:", path)
+
