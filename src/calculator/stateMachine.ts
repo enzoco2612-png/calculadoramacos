@@ -278,6 +278,21 @@ function onDecimal(ctx: CalculatorContext): CalculatorContext {
 }
 
 function onBackspace(ctx: CalculatorContext): CalculatorContext {
+  if (ctx.state === "OpReady") {
+    const editing = formatDisplay(ctx.acc ?? 0);
+    return {
+      state: "Input",
+      display: editing,
+      expression: "",
+      acc: null,
+      op: null,
+      lastB: null,
+      lastBPercent: false,
+      percentRate: null,
+      editing,
+    };
+  }
+
   if (ctx.state !== "Input") return ctx;
   const editing = backspaceEditing(ctx.editing ?? "0");
   return {
