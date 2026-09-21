@@ -294,6 +294,20 @@ function onBackspace(ctx: CalculatorContext): CalculatorContext {
   }
 
   if (ctx.state !== "Input") return ctx;
+
+  // If the right operand has only one digit left, Backspace removes that
+  // operand entirely and returns to the pending-operator state. A subsequent
+  // Backspace can then remove the operator, and another can edit the left operand.
+  if (
+    ctx.op != null &&
+    ctx.acc != null &&
+    ctx.editing != null &&
+    (ctx.editing.length === 1 ||
+      (ctx.editing.startsWith("-") && ctx.editing.length === 2))
+  ) {
+    return opReadyContext(ctx.acc, ctx.op);
+  }
+
   const editing = backspaceEditing(ctx.editing ?? "0");
   return {
     ...ctx,
