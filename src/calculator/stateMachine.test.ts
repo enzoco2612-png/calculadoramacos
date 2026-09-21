@@ -198,6 +198,22 @@ describe("State Machine — controls", () => {
     expect(ctx.display).toBe("37");
   });
 
+  it("backspace in OpReady removes only the pending operator, then deletes digits normally", () => {
+    let ctx = seq(
+      { type: "digit", digit: "8" },
+      { type: "operator", op: "+" },
+    );
+
+    ctx = reduce(ctx, { type: "backspace" });
+    expect(ctx.state).toBe("Input");
+    expect(ctx.display).toBe("8");
+    expect(ctx.expression).toBe("");
+    expect(ctx.op).toBeNull();
+
+    ctx = reduce(ctx, { type: "backspace" });
+    expect(ctx.display).toBe("0");
+  });
+
   it("+/− toggles sign", () => {
     let ctx = seq({ type: "digit", digit: "5" });
     ctx = reduce(ctx, { type: "sign" });
