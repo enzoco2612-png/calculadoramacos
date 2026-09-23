@@ -1,5 +1,6 @@
 import { Display } from "./Display";
 import { Keypad } from "./Keypad";
+import { MemoryControls } from "./MemoryControls";
 import { WindowControls } from "./WindowControls";
 import type { CalculatorEvent } from "../calculator";
 
@@ -37,6 +38,7 @@ export function CalculatorWindow({
       </header>
 
       <Display expression={expression} result={display} />
+      <MemoryControls onEvent={onEvent} />
       <Keypad onEvent={onEvent} />
     </div>
   );

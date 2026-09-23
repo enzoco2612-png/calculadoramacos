@@ -9,6 +9,10 @@ body,
 #root {
   margin: 0;
   width: 100%;
+  min-height: 100%;
+}
+
+html {
   height: 100%;
 }
 
@@ -16,7 +20,9 @@ body {
   font-family: var(--font-ui);
   background: transparent;
   color: var(--text-primary);
-  overflow: hidden;
+  /* Allow page scroll when viewport is shorter than the 912px calculator. */
+  overflow-x: hidden;
+  overflow-y: auto;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -38,9 +44,11 @@ button:disabled {
 
 .app {
   width: 100%;
-  height: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
   display: grid;
   place-items: center;
+  padding: 16px 0;
   background: transparent;
 }
 
@@ -49,6 +57,7 @@ button:disabled {
 .calculator-window {
   width: var(--window-width);
   height: var(--window-height);
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
   gap: var(--window-gap);
@@ -159,6 +168,47 @@ button:disabled {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* —— Memory Controls (design.pen) —— */
+
+.memory-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--memory-gap);
+  width: 100%;
+  flex-shrink: 0;
+  padding: 0 0 var(--memory-padding-bottom) var(--memory-padding-left);
+  box-sizing: border-box;
+}
+
+.memory-key {
+  width: var(--memory-key-size);
+  height: var(--memory-key-size);
+  border-radius: var(--memory-key-radius);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--key-number);
+  color: var(--text-primary);
+  font-size: var(--memory-font-size);
+  font-weight: 500;
+  line-height: 1;
+  transition: background-color 80ms ease, transform 60ms ease;
+}
+
+.memory-key:hover:not(:disabled) {
+  background: var(--key-number-hover);
+}
+
+.memory-key:active:not(:disabled) {
+  background: var(--key-number-pressed);
+}
+
+.memory-key:focus-visible {
+  outline: 2px solid var(--text-primary);
+  outline-offset: 2px;
 }
 
 /* —— Keypad —— */

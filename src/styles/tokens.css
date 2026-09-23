@@ -15,7 +15,7 @@
   --font-ui: "Inter", system-ui, sans-serif;
 
   --window-width: 456px;
-  --window-height: 816px;
+  --window-height: 912px;
   --window-radius: 52px;
   --window-padding-top: 18px;
   --window-padding-right: 20px;
@@ -43,6 +43,13 @@
   --keypad-gap: 16px;
   --key-size: 92px;
   --key-radius: 46px;
+
+  --memory-key-size: 80px;
+  --memory-key-radius: 40px;
+  --memory-gap: 28px;
+  --memory-padding-left: 6px;
+  --memory-padding-bottom: 8px;
+  --memory-font-size: 24px;
 
   --key-function-hover: #7e7e7e;
   --key-function-pressed: #656565;
