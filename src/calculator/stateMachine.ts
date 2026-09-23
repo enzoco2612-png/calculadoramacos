@@ -1,6 +1,7 @@
-/** Calculator state machine — SPEC §1–5. Calls engine for ⊕ and %. */
+/** Calculator state machine — SPEC §1–5 + Memory Controls V2. Calls engine for ⊕, %, memory. */
 
 import {
+  add,
   appendDecimal,
   appendDigit,
   applyOperator,
@@ -11,6 +12,7 @@ import {
   parseOperand,
   percent,
   percentOperand,
+  sub,
 } from "./engine";
 import type { CalculatorContext, CalculatorEvent, Operator } from "./types";
 
@@ -25,10 +27,15 @@ export function initialContext(): CalculatorContext {
     lastBPercent: false,
     percentRate: null,
     editing: "0",
+    memoryValue: 0,
   };
 }
 
-function withEditing(editing: string, rest: Partial<CalculatorContext> = {}): CalculatorContext {
+function withEditing(
+  editing: string,
+  memoryValue: number,
+  rest: Omit<Partial<CalculatorContext>, "memoryValue"> = {},
+): CalculatorContext {
   return {
     state: "Input",
     display: editing,
@@ -40,6 +47,8 @@ function withEditing(editing: string, rest: Partial<CalculatorContext> = {}): Ca
     percentRate: null,
     editing,
     ...rest,
+    // Always last: rest is typed without memoryValue and cannot override it.
+    memoryValue,
   };
 }
 
@@ -60,6 +69,7 @@ function resultContext(
   op: Operator,
   b: number,
   value: number,
+  memoryValue: number,
   opts: { lastBPercent?: boolean; lastB?: number } = {},
 ): CalculatorContext {
   const lastBPercent = opts.lastBPercent ?? false;
@@ -73,10 +83,15 @@ function resultContext(
     lastBPercent,
     percentRate: null,
     editing: null,
+    memoryValue,
   };
 }
 
-function opReadyContext(acc: number, op: Operator): CalculatorContext {
+function opReadyContext(
+  acc: number,
+  op: Operator,
+  memoryValue: number,
+): CalculatorContext {
   return {
     state: "OpReady",
     display: formatDisplay(acc),
@@ -87,6 +102,7 @@ function opReadyContext(acc: number, op: Operator): CalculatorContext {
     lastBPercent: false,
     percentRate: null,
     editing: null,
+    memoryValue,
   };
 }
 
@@ -137,13 +153,22 @@ function applyBinary(
   };
 }
 
+/** Numeric value currently shown (for m+ / m-). Error → null. */
+function currentDisplayValue(ctx: CalculatorContext): number | null {
+  if (ctx.state === "Error") return null;
+  if (ctx.state === "Input" && ctx.editing != null) {
+    return parseOperand(ctx.editing);
+  }
+  return parseOperand(ctx.display);
+}
+
 export function reduce(
   ctx: CalculatorContext,
   event: CalculatorEvent,
 ): CalculatorContext {
   switch (event.type) {
     case "clear":
-      return initialContext();
+      return { ...initialContext(), memoryValue: ctx.memoryValue };
 
     case "digit":
       return onDigit(ctx, event.digit);
@@ -166,6 +191,15 @@ export function reduce(
     case "equals":
       return onEquals(ctx);
 
+    case "memoryAdd":
+      return onMemoryAdd(ctx);
+
+    case "memorySubtract":
+      return onMemorySubtract(ctx);
+
+    case "memoryRecall":
+      return onMemoryRecall(ctx);
+
     default:
       return ctx;
   }
@@ -173,7 +207,7 @@ export function reduce(
 
 function onDigit(ctx: CalculatorContext, digit: string): CalculatorContext {
   if (ctx.state === "Error") {
-    return withEditing(appendDigit("0", digit));
+    return withEditing(appendDigit("0", digit), ctx.memoryValue);
   }
 
   if (ctx.state === "Result") {
@@ -190,9 +224,10 @@ function onDigit(ctx: CalculatorContext, digit: string): CalculatorContext {
         lastBPercent: true,
         percentRate: null,
         editing,
+        memoryValue: ctx.memoryValue,
       };
     }
-    return withEditing(appendDigit("0", digit));
+    return withEditing(appendDigit("0", digit), ctx.memoryValue);
   }
 
   if (ctx.state === "OpReady") {
@@ -207,6 +242,7 @@ function onDigit(ctx: CalculatorContext, digit: string): CalculatorContext {
       lastBPercent: false,
       percentRate: null,
       editing,
+      memoryValue: ctx.memoryValue,
     };
   }
 
@@ -227,7 +263,7 @@ function onDigit(ctx: CalculatorContext, digit: string): CalculatorContext {
 
 function onDecimal(ctx: CalculatorContext): CalculatorContext {
   if (ctx.state === "Error") {
-    return withEditing(appendDecimal("0"));
+    return withEditing(appendDecimal("0"), ctx.memoryValue);
   }
 
   if (ctx.state === "Result") {
@@ -243,9 +279,10 @@ function onDecimal(ctx: CalculatorContext): CalculatorContext {
         lastBPercent: true,
         percentRate: null,
         editing,
+        memoryValue: ctx.memoryValue,
       };
     }
-    return withEditing(appendDecimal("0"));
+    return withEditing(appendDecimal("0"), ctx.memoryValue);
   }
 
   if (ctx.state === "OpReady") {
@@ -260,6 +297,7 @@ function onDecimal(ctx: CalculatorContext): CalculatorContext {
       lastBPercent: false,
       percentRate: null,
       editing,
+      memoryValue: ctx.memoryValue,
     };
   }
 
@@ -290,6 +328,7 @@ function onBackspace(ctx: CalculatorContext): CalculatorContext {
       lastBPercent: false,
       percentRate: null,
       editing,
+      memoryValue: ctx.memoryValue,
     };
   }
 
@@ -305,7 +344,7 @@ function onBackspace(ctx: CalculatorContext): CalculatorContext {
     (ctx.editing.length === 1 ||
       (ctx.editing.startsWith("-") && ctx.editing.length === 2))
   ) {
-    return opReadyContext(ctx.acc, ctx.op);
+    return opReadyContext(ctx.acc, ctx.op, ctx.memoryValue);
   }
 
   const editing = backspaceEditing(ctx.editing ?? "0");
@@ -326,7 +365,7 @@ function onSign(ctx: CalculatorContext): CalculatorContext {
 
   if (ctx.state === "OpReady") {
     const acc = negate(ctx.acc ?? 0);
-    return opReadyContext(acc, ctx.op!);
+    return opReadyContext(acc, ctx.op!, ctx.memoryValue);
   }
 
   if (ctx.state === "Result") {
@@ -357,7 +396,7 @@ function onPercent(ctx: CalculatorContext): CalculatorContext {
     if (!result.ok) {
       return errorContext(ctx.expression, ctx);
     }
-    return opReadyContext(result.value, ctx.op!);
+    return opReadyContext(result.value, ctx.op!, ctx.memoryValue);
   }
 
   if (ctx.state === "Result") {
@@ -375,6 +414,7 @@ function onPercent(ctx: CalculatorContext): CalculatorContext {
       lastBPercent: false,
       percentRate: null,
       editing: null,
+      memoryValue: ctx.memoryValue,
     };
   }
 
@@ -415,17 +455,17 @@ function onOperator(ctx: CalculatorContext, op: Operator): CalculatorContext {
   if (ctx.state === "Error") return ctx;
 
   if (ctx.state === "OpReady") {
-    return opReadyContext(ctx.acc!, op);
+    return opReadyContext(ctx.acc!, op, ctx.memoryValue);
   }
 
   if (ctx.state === "Result") {
-    return opReadyContext(ctx.acc ?? 0, op);
+    return opReadyContext(ctx.acc ?? 0, op, ctx.memoryValue);
   }
 
   // Input: new left operand after %-result (acc null, lastB preserved)
   if (ctx.acc == null && ctx.op != null && ctx.lastB != null && ctx.editing != null) {
     const a = parseOperand(ctx.editing);
-    return opReadyContext(a, op);
+    return opReadyContext(a, op, ctx.memoryValue);
   }
 
   // Input
@@ -436,12 +476,12 @@ function onOperator(ctx: CalculatorContext, op: Operator): CalculatorContext {
     if (!applied.ok) {
       return errorContext(applied.expression, ctx);
     }
-    return opReadyContext(applied.value, op);
+    return opReadyContext(applied.value, op, ctx.memoryValue);
   }
 
   // First operand only
   const a = parseOperand(ctx.editing ?? "0");
-  return opReadyContext(a, op);
+  return opReadyContext(a, op, ctx.memoryValue);
 }
 
 function onEquals(ctx: CalculatorContext): CalculatorContext {
@@ -463,7 +503,7 @@ function onEquals(ctx: CalculatorContext): CalculatorContext {
       if (!result.ok) {
         return errorContext(formatExpression(a, ctx.op, converted.value), ctx);
       }
-      return resultContext(a, ctx.op, converted.value, result.value, {
+      return resultContext(a, ctx.op, converted.value, result.value, ctx.memoryValue, {
         lastBPercent: true,
         lastB: ctx.lastB,
       });
@@ -473,7 +513,7 @@ function onEquals(ctx: CalculatorContext): CalculatorContext {
     if (!result.ok) {
       return errorContext(formatExpression(a, ctx.op, b), ctx);
     }
-    return resultContext(a, ctx.op, b, result.value);
+    return resultContext(a, ctx.op, b, result.value, ctx.memoryValue);
   }
 
   if (ctx.state === "OpReady") {
@@ -484,7 +524,7 @@ function onEquals(ctx: CalculatorContext): CalculatorContext {
     if (!result.ok) {
       return errorContext(formatExpression(a, ctx.op!, b), ctx);
     }
-    return resultContext(a, ctx.op!, b, result.value);
+    return resultContext(a, ctx.op!, b, result.value, ctx.memoryValue);
   }
 
   // Input: new left after %-result — reapply preserved A⊕B%
@@ -504,7 +544,7 @@ function onEquals(ctx: CalculatorContext): CalculatorContext {
     if (!result.ok) {
       return errorContext(formatExpression(a, ctx.op, converted.value), ctx);
     }
-    return resultContext(a, ctx.op, converted.value, result.value, {
+    return resultContext(a, ctx.op, converted.value, result.value, ctx.memoryValue, {
       lastBPercent: true,
       lastB: ctx.lastB,
     });
@@ -518,13 +558,69 @@ function onEquals(ctx: CalculatorContext): CalculatorContext {
     if (!applied.ok) {
       return errorContext(applied.expression, ctx);
     }
-    return resultContext(a, ctx.op, applied.shownB, applied.value, {
+    return resultContext(a, ctx.op, applied.shownB, applied.value, ctx.memoryValue, {
       lastBPercent: applied.lastBPercent,
       lastB: applied.lastB,
     });
   }
 
   return ctx;
+}
+
+function onMemoryAdd(ctx: CalculatorContext): CalculatorContext {
+  const current = currentDisplayValue(ctx);
+  if (current == null) return ctx;
+  const result = add(ctx.memoryValue, current);
+  if (!result.ok) return ctx;
+  return { ...ctx, memoryValue: result.value };
+}
+
+function onMemorySubtract(ctx: CalculatorContext): CalculatorContext {
+  const current = currentDisplayValue(ctx);
+  if (current == null) return ctx;
+  const result = sub(ctx.memoryValue, current);
+  if (!result.ok) return ctx;
+  return { ...ctx, memoryValue: result.value };
+}
+
+function onMemoryRecall(ctx: CalculatorContext): CalculatorContext {
+  const text = formatDisplay(ctx.memoryValue);
+
+  if (ctx.state === "Error") {
+    return withEditing(text, ctx.memoryValue);
+  }
+
+  if (ctx.state === "Result") {
+    return withEditing(text, ctx.memoryValue);
+  }
+
+  if (ctx.state === "OpReady") {
+    return {
+      state: "Input",
+      display: text,
+      expression: formatExpression(ctx.acc!, ctx.op!),
+      acc: ctx.acc,
+      op: ctx.op,
+      lastB: null,
+      lastBPercent: false,
+      percentRate: null,
+      editing: text,
+      memoryValue: ctx.memoryValue,
+    };
+  }
+
+  // Input — replace current operand (with or without pending op)
+  return {
+    ...ctx,
+    state: "Input",
+    display: text,
+    editing: text,
+    percentRate: null,
+    expression:
+      ctx.op != null && ctx.acc != null
+        ? formatExpression(ctx.acc, ctx.op)
+        : "",
+  };
 }
 
 /** Dispatch a sequence of events from a clean initial context. */

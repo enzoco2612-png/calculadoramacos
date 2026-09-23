@@ -1,4 +1,4 @@
-/** Calculator domain types — SPEC §5 */
+/** Calculator domain types — SPEC §5 + Memory Controls V2 */
 
 export type CalculatorState = "Input" | "OpReady" | "Result" | "Error";
 
@@ -12,7 +12,10 @@ export type CalculatorEvent =
   | { type: "clear" }
   | { type: "backspace" }
   | { type: "percent" }
-  | { type: "sign" };
+  | { type: "sign" }
+  | { type: "memoryAdd" }
+  | { type: "memorySubtract" }
+  | { type: "memoryRecall" };
 
 export interface CalculatorContext {
   state: CalculatorState;
@@ -39,6 +42,11 @@ export interface CalculatorContext {
   percentRate: number | null;
   /** Raw editing buffer for the current operand (uses `,` as decimal) */
   editing: string | null;
+  /**
+   * Session memory register (Memory Controls V2).
+   * Not persisted. Only `initialContext()` sets this to 0; helpers must pass it through.
+   */
+  memoryValue: number;
 }
 
 export type CalcResult =
