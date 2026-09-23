@@ -43,3 +43,10 @@ target/
 .env
 .env.*
 .cursor/
+
+# Playwright
+/playwright-report/
+/test-results/
+/blob-report/
+/playwright/.cache/
+/e2e/artifacts/
