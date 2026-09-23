@@ -10,7 +10,7 @@
       "reusable": true,
       "clip": true,
       "width": 456,
-      "height": 816,
+      "height": 912,
       "fill": "$window-bg",
       "cornerRadius": 52,
       "effect": {
@@ -156,6 +156,93 @@
               "fontSize": 62,
               "fontWeight": "normal",
               "letterSpacing": 0.4
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "AnSuL",
+          "name": "Memory Controls",
+          "reusable": true,
+          "width": "fill_container",
+          "gap": 28,
+          "padding": [
+            0,
+            0,
+            8,
+            6
+          ],
+          "justifyContent": "start",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "GNW4X",
+              "name": "Memory Add",
+              "width": 80,
+              "height": 80,
+              "fill": "$key-number",
+              "cornerRadius": 40,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jmpTf",
+                  "name": "Label",
+                  "fill": "$text-primary",
+                  "content": "m+",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 24,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "o7Bb7",
+              "name": "Memory Subtract",
+              "width": 80,
+              "height": 80,
+              "fill": "$key-number",
+              "cornerRadius": 40,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "8dgLE",
+                  "name": "Label",
+                  "fill": "$text-primary",
+                  "content": "m-",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 24,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SgMjC",
+              "name": "Memory Recall",
+              "width": 80,
+              "height": 80,
+              "fill": "$key-number",
+              "cornerRadius": 40,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "5la2a",
+                  "name": "Label",
+                  "fill": "$text-primary",
+                  "content": "mr",
+                  "fontFamily": "$font-ui",
+                  "fontSize": 24,
+                  "fontWeight": "500"
+                }
+              ]
             }
           ]
         },
@@ -767,6 +854,38 @@
     "font-ui": {
       "type": "string",
       "value": "Inter"
+    },
+    "memory-key-size": {
+      "type": "number",
+      "value": 80
+    },
+    "memory-key-radius": {
+      "type": "number",
+      "value": 40
+    },
+    "memory-gap": {
+      "type": "number",
+      "value": 28
+    },
+    "memory-padding-left": {
+      "type": "number",
+      "value": 6
+    },
+    "memory-padding-bottom": {
+      "type": "number",
+      "value": 8
+    },
+    "memory-font-size": {
+      "type": "number",
+      "value": 24
+    },
+    "memory-font-weight": {
+      "type": "string",
+      "value": "500"
+    },
+    "window-height": {
+      "type": "number",
+      "value": 912
     }
   },
   "fileToken": "1e28b752-a857-476f-87f7-d91bb5d68953"
